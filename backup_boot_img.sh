@@ -1,66 +1,67 @@
 #!/bin/bash
 
-# script to backup essential images to recover from bootloop
-#set variables
-echo "Please enter the name of the directory to back up images into:"
-# read input
+# Script to backup essential images to recover from bootloop
+
+# Set variables
+echo -e "\e[1mPlease enter the name of the directory to back up images into:\e[0m"
+# Read input
 read dir_name
-#create directory
+# Create directory
 mkdir "$dir_name"
 
-# confirm directory is made
+# Confirm directory is made
 if [ -d "$dir_name" ]; then
-  echo "Directory '$dir_name' created successfully"
+  echo -e "\e[32mDirectory '$dir_name' created successfully\e[0m"
 else
-  echo "Failed to create '$dir_name'. Exiting script."
+  echo -e "\e[31mFailed to create '$dir_name'. Exiting script.\e[0m"
   exit 1
 fi
 
-# enter directory
-cd "$dir_name" || { echo "Failed to enter directory '$dir_name'. Exiting script."; exit 1; }
+# Enter directory
+cd "$dir_name" || { echo -e "\e[31mFailed to enter directory '$dir_name'. Exiting script.\e[0m"; exit 1; }
 
-echo "Initializing Android Debug Bridge (ADB) daemon"
+echo -e "\e[1mInitializing Android Debug Bridge (ADB) daemon\e[0m"
 sleep 2
-echo "Checking for Android platform tools"
+echo -e "\e[1mChecking for Android platform tools\e[0m"
 adb devices
 
-echo "Device found in ADB"
-echo "Let's continue"
+echo -e "\e[32mDevice found in ADB\e[0m"
+echo -e "\e[1mLet's continue\e[0m"
 sleep 2
-echo "Is your device rooted? (yes/no)"
-# read device root status
+echo -e "\e[1mIs your device rooted? (yes/no)\e[0m"
+# Read device root status
 read root_status
 
 if [ "$root_status" == "yes" ]; then
-  echo "Please grant root permission to ADB shell"
+  echo -e "\e[1mPlease grant root permission to ADB shell\e[0m"
 else
-  echo "This script can only work on a rooted device, sorry"
+  echo -e "\e[31mThis script can only work on a rooted device, sorry\e[0m"
   exit 1
 fi
 
-# enter adb shell and get root access
+# Enter adb shell and get root access
 adb shell su -c "exit"
 if [ $? -ne 0 ]; then
-  echo "Failed to get root access on the device. Exiting script."
+  echo -e "\e[31mFailed to get root access on the device. Exiting script.\e[0m"
   exit 1
 fi
 
-# function to backup partitions
-backup_partition() { 
+# Function to backup partitions
+backup_partition() {
     local partition=$1
     local output=$2
     adb shell su -c "dd if=/dev/block/by-name/$partition of=/sdcard/$output.img"
     adb pull "/sdcard/$output.img" .
     if [ $? -eq 0 ]; then
-        echo "$partition partition backed up successfully to $output.img in '$dir_name'"
-    else 
-        echo "Failed to back up $partition partition."
+        echo -e "\e[32m$partition partition backed up successfully to $output.img in '$dir_name'\e[0m"
+    else
+        echo -e "\e[31mFailed to back up $partition partition.\e[0m"
     fi
 }
 
-# display options
-echo "Please enter the partitions you want to back up (comma-separated list):"
-echo "For bootloop protection, 1, 2, and 3 are recommended"
+# Display options
+echo -e "\e[1mPlease enter the partitions you want to back up (comma-separated list):\e[0m"
+echo -e "\e[1mFor bootloop protection, 1, 2, and 3 are recommended\e[0m"
 sleep 1
 echo "1 - boot"
 echo "2 - dtbo"
@@ -68,16 +69,16 @@ echo "3 - vbmeta"
 echo "4 - recovery"
 echo "A or a - All"
 
-# read input
+# Read input
 read -p "Your choice: " user_input
 
-# convert to lowercase
+# Convert to lowercase
 user_input=$(echo "$user_input" | tr 'A-Z' 'a-z')
 
-# split input into array
+# Split input into array
 IFS=',' read -r -a partitions <<< "$user_input"
 
-# iterate over the array and back up the selected partitions
+# Iterate over the array and back up the selected partitions
 for part in "${partitions[@]}"; do
     case "$part" in
         1)
@@ -100,19 +101,20 @@ for part in "${partitions[@]}"; do
             break
             ;;
         *)
-            echo "Invalid option: $part"
+            echo -e "\e[31mInvalid option: $part\e[0m"
             ;;
     esac
 done
 
-echo "Backup process completed."
+echo -e "\e[32mBackup process completed.\e[0m"
 
-# delete all .img files from /sdcard on the device
+# Delete all .img files from /sdcard on the device
 adb shell su -c "rm -rf /sdcard/*.img"
 if [ $? -eq 0 ]; then
-    echo "All .img files on /sdcard have been deleted."
+    echo -e "\e[32mAll .img files on /sdcard have been deleted.\e[0m"
 else
-    echo "Failed to delete .img files on /sdcard."
+    echo -e "\e[31mFailed to delete .img files on /sdcard.\e[0m"
 fi
 
-echo "Script finished."
+echo -e "\e[32mScript finished.\e[0m"
+
