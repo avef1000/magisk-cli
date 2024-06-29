@@ -1,32 +1,33 @@
 #!/bin/bash
-echo "#################################################################################"
-echo "#                                                                               #"
-echo "#                      MAGISK FOR THE COMMAND LINE                              #"
-echo "#                                                                               #"
-echo "#                      ADAPTED BY: Avraham Freeman                              #"
-echo "#                     FROM THE SCRIPTS OF TOPJOHNWU                              #"
-echo "#          Using the tools of the legendary TOPJOHNWU's MAGISK                  #"
-echo "#                                                                               #"
-echo "#################################################################################"
+
+echo -e "\e[1;36m#################################################################################\e[0m"
+echo -e "\e[1;36m#                                                                               #\e[0m"
+echo -e "\e[1;36m#                      \e[1;33mMAGISK FOR THE COMMAND LINE\e[0m                 #\e[0m"
+echo -e "\e[1;36m#                                                                               #\e[0m"
+echo -e "\e[1;36m#                      \e[1;33mADAPTED BY: Avraham Freeman\e[0m                 #\e[0m"
+echo -e "\e[1;36m#                     \e[1;33mFROM THE SCRIPTS OF TOPJOHNWU\e[0m                #\e[0m"
+echo -e "\e[1;36m#          \e[1;33mUsing the tools of the legendary TOPJOHNWU's MAGISK\e[0m     #\e[0m"
+echo -e "\e[1;36m#                                                                               #\e[0m"
+echo -e "\e[1;36m#################################################################################\e[0m"
 sleep 3
 echo ""
 echo ""
 echo ""
-echo "            checking for all required resources, please wait"
+echo -e "\e[1;34m            checking for all required resources, please wait\e[0m"
 sleep 1
-echo "            please ensure that you run $ ./magisk-cli.sh boot.img"
+echo -e "\e[1;34m            please ensure that you run \e[0m\e[1;32m\$ ./magisk-cli.sh boot.img\e[0m"
 sleep 1
-echo "            please ensure to run this command with sudo or as root"
-echo "    if you have not, please do ctrl c run with sudo and specify boot.img"
+echo -e "\e[1;34m            please ensure to run this command with sudo or as root\e[0m"
+echo -e "\e[1;34m    if you have not, please do ctrl c run with sudo and specify boot.img\e[0m"
 sleep 2
 echo ""
-echo "                  all done lets get this party started!!"
+echo -e "\e[1;34m                  all done lets get this party started!!\e[0m"
 sleep 1
-echo " start with a quick update"
+echo -e "\e[1;34m start with a quick update\e[0m"
 sudo apt update
-############
-# Functions
-############
+echo -e "\e[1;35m############\e[0m"
+echo -e "\e[1;35m# Functions\e[0m"
+echo -e "\e[1;35m############\e[0m"
 
 # Pure bash dirname implementation
 getdir() {
@@ -45,24 +46,24 @@ getdir() {
 
 # Function to display the menu and read choice
 display_menu() {
-    echo "======= Magisk CLI Script ========"
-    echo "1. Patch Boot Image"
-    echo "2. (only) Split Boot Image"
-    echo "3. Display Verbose Patching Logs"
-    echo "4. Exit"
-    echo "=================================="
-    read -p "Enter your choice: " choice
+    echo -e "\e[1;34m======= Magisk CLI Script ========\e[0m"
+    echo -e "\e[1;34m1. Patch Boot Image\e[0m"
+    echo -e "\e[1;34m2. (only) Split Boot Image\e[0m"
+    echo -e "\e[1;34m3. Display Verbose Patching Logs\e[0m"
+    echo -e "\e[1;34m4. Exit\e[0m"
+    echo -e "\e[1;34m==================================\e[0m"
+    read -p "\e[1;32mEnter your choice: \e[0m" choice
     case $choice in
         1) patch_boot_image ;;
         2) split_boot_image ;;
         3) display_verbose ;;
         4) exit 0 ;;
-        *) echo "Invalid choice, please select a valid option"
+        *) echo -e "\e[1;31mInvalid choice, please select a valid option\e[0m"
            display_menu ;;
     esac
 }
 
-echo "detecting boot.img"
+echo -e "\e[1;34mdetecting boot.img\e[0m"
 # Function to automatically detect or specify boot image
 detect_boot_image() {
     if [ $# -eq 0 ]; then
@@ -73,16 +74,16 @@ detect_boot_image() {
         BOOTIMAGE="$1"
     fi
 
-    echo "Found! Using image: $BOOTIMAGE"
+    echo -e "\e[1;32mFound! Using image: $BOOTIMAGE\e[0m"
 
     # Check if boot image file exists
     if [ ! -f "$BOOTIMAGE" ]; then
-        echo "Error: Boot image file '$BOOTIMAGE' not found."
+        echo -e "\e[1;31mError: Boot image file '$BOOTIMAGE' not found.\e[0m"
         exit 1
     fi
 }
 
-echo  "initializing Magiskboot, the most advanced boot script to exist" 
+echo -e "\e[1;34minitializing Magiskboot, the most advanced boot script to exist\e[0m"
 sleep 1
 # Function to split the boot image
 split_boot_image() {
@@ -104,7 +105,7 @@ patch_boot_image() {
     # Initialization
     #################
     ui_print "- Loading Helper Utility To Assist In The Boot.img surgery"
-sleep 2
+    sleep 2
     if [ -z $SOURCEDMODE ]; then
         # Switch to the location of the script file
         cd "$(getdir "${BASH_SOURCE:-$0}")"
@@ -141,7 +142,7 @@ sleep 2
 
     CHROMEOS=false
     ui_print "- Initializing magiskboot for unpacking"
-sleep 1
+    sleep 1
     ui_print "- Unpacking boot image"
     ./magiskboot unpack "$BOOTIMAGE"
 
@@ -257,7 +258,7 @@ sleep 1
     ########
     # Repack
     ########
-echo " Getting ready to repack the boot.img"
+    echo " Getting ready to repack the boot.img"
     ui_print "- Repacking boot image"
     ./magiskboot repack "$BOOTIMAGE" || abort "! Unable to repack boot image"
     mv -f new-boot.img patched_boot.img
@@ -270,14 +271,14 @@ echo " Getting ready to repack the boot.img"
     ui_print "- All done!"
 }
 
-echo "##########################################################################"
-echo "||======================Magisk For The Command Line=====================||"
-echo "||                                                                      #"
-echo "||                  script by: TOPJOHNWU                                #"
-echo "||             the greatest developer of all time!                      #"
-echo "||       Adapted For The Command Line By: Avraham Freeman               #"
-echo "||               All Rights Are TOPJOHNWU'S                             #"
-echo "#########################################################################"
+echo -e "\e[1;36m##########################################################################\e[0m"
+echo -e "\e[1;36m||======================Magisk For The Command Line=====================||\e[0m"
+echo -e "\e[1;36m||                                                                        #\e[0m"
+echo -e "\e[1;36m||                  \e[1;33mscript by: TOPJOHNWU\e[0m                     #\e[0m"
+echo -e "\e[1;36m||             \e[1;33mthe greatest developer of all time!\e[0m           #\e[0m"
+echo -e "\e[1;36m||       \e[1;33mAdapted For The Command Line By: Avraham Freeman\e[0m    #\e[0m"
+echo -e "\e[1;36m||               \e[1;33mAll Rights Are TOPJOHNWU'S\e[0m                  #\e[0m"
+echo -e "\e[1;36m#########################################################################\e[0m"
 
 
 #############
